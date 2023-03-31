@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useChangeFav } from '../../hooks/useChangeFav';
-import { getCharacter } from '../../redux/characterSlice';
+import { useEffect } from 'react';
+import { getCharacterByName,  } from '../../redux/characterSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import BotonFavorito from '../botones/boton-favorito.componente';
 import './tarjeta-personaje.css';
@@ -16,13 +15,10 @@ import './tarjeta-personaje.css';
 const TarjetaPersonaje = () => {
 
     const dispatch = useAppDispatch();
-    const {loading,data,page} = useAppSelector(state => state.character)
+    const {loading,data,page,name} = useAppSelector(state => state.character)
 
-    console.log(data?.results.map(a=>a));
-    
-    
     useEffect(() => {
-        dispatch(getCharacter(page))
+        dispatch(getCharacterByName({name, page}))
     }, [page])
     
 
@@ -35,7 +31,7 @@ const TarjetaPersonaje = () => {
                 <img src={c.image} alt={c.name}/>
                 <div className="tarjeta-personaje-body">
                     <span>{c.name}</span>
-                    <BotonFavorito esFavorito={c.esFavorito} onClick={()=> c.esFavorito} />
+                    <BotonFavorito esFavorito={c.esFavorito} onClick={()=> !c.esFavorito} />
                 </div>
                 </div>
                 

@@ -1,26 +1,32 @@
 import { createSlice, PayloadAction,createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { Characters } from '../types/rickAndMorty.types'
+import { useGetCharacterByName, } from '../hooks/useApi'
+
 
 interface initialType {
     data:Characters | null
     loading : boolean
     page: number
+    name: string
 }
 
 const initialState: initialType = {
     data: null,
     loading : false,
-    page: 1
+    page: 1,
+    name: "",
 }
 
 
-export const getCharacter = createAsyncThunk(
-    "characters/characters",
-    async (page: number) => {
-        const {data} = await axios.get(`https://rickandmortyapi.com/api/character/?page=${page}`)
-        return data;
-    }
+
+
+export const getCharacterByName = createAsyncThunk(
+    "characters/characterByName",
+    async({name, page} : {name: string, page: number})=>{
+        const res = await useGetCharacterByName(name, page)
+        return res;
+    },
 )
 
 
@@ -33,24 +39,28 @@ const characterSlice = createSlice({
         },
         decrementPage:(state) =>{
             state.page -= 1
+        },
+        searchingValue:(state,action) =>{
+            state.name = action.payload
         }
     },
     extraReducers:(builder) => {
         builder
-            .addCase(getCharacter.pending, state => {
+            // by name
+            .addCase(getCharacterByName.pending, state => {
                 state.loading = true;
             })
-            .addCase(getCharacter.fulfilled, (state,action) => {
+            .addCase(getCharacterByName.fulfilled, (state,action) => {
                 state.loading = false;
                 state.data = action.payload;
             })
-            .addCase(getCharacter.rejected,(state,action) => {
+            .addCase(getCharacterByName.rejected,(state) => {
                 state.loading = false;
             })
     },
 
 })
 
-export const {incrementPage,decrementPage} = characterSlice.actions;
+export const {incrementPage,decrementPage,searchingValue} = characterSlice.actions;
 
 export default characterSlice.reducer;
