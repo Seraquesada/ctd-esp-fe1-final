@@ -12,7 +12,7 @@ import './paginacion.css';
  */
 const Paginacion = () => {
 
-    const {data} = useAppSelector(state => state.character)
+    const {data,page} = useAppSelector(state => state.character)
     const dispatch = useAppDispatch();
     
     const onClickPrevious = () => dispatch(decrementPage()) 

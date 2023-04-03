@@ -9,6 +9,7 @@ import GrillaPersonajes from "../componentes/personajes/grilla-personajes.compon
  * @returns la pagina de favoritos
  */
 const PaginaFavoritos = () => {
+    
     return <div className="container">
         <div className="actions">
             <h3>Personajes Favoritos</h3>

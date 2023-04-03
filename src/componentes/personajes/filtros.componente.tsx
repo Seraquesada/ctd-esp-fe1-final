@@ -4,11 +4,11 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { getCharacterByName, searchingValue } from '../../redux/characterSlice';
 
 const Filtros = () => {
+    
     const [name, setName] = useState<string>("")
 
-    
     const dispatch = useAppDispatch()
-    const onChange = (e:React.ChangeEvent<HTMLInputElement>) =>setName(e.target.value);
+    const onChange = (e:React.ChangeEvent<HTMLInputElement>)  =>setName(e.target.value) ;
     const {page} = useAppSelector(state => state.character)
 
     useEffect(()=>{

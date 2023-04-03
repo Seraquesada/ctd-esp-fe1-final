@@ -1,3 +1,5 @@
+
+import { useAppDispatch } from '../../redux/hooks';
 import './boton-favorito.css';
 
 /**
@@ -10,13 +12,17 @@ import './boton-favorito.css';
  */
 interface Props {
     esFavorito : boolean,
-    onClick: () => boolean;
 }
-const BotonFavorito = ({esFavorito, onClick}: Props) => {
+const BotonFavorito = ({esFavorito}: Props) => {
+    
+    const dispatch = useAppDispatch()
+
+    console.log();
+    
 
     const src = esFavorito ? "/imagenes/star-filled.png" : "/imagenes/star.png"
 
-    return  <div className="boton-favorito" onClick={onClick} >
+    return  <div className="boton-favorito" onClick={()=>{}} >
                 <img src={src} alt={"favorito"} />
             </div>
 }

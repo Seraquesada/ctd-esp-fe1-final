@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
-import { getCharacterByName,  } from '../../redux/characterSlice';
+import { getCharacterByName, idSetter,  } from '../../redux/characterSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import BotonFavorito from '../botones/boton-favorito.componente';
 import './tarjeta-personaje.css';
+import { useNavigate, redirect } from 'react-router-dom';
+import { useGetEpisodesByCharacter } from '../../hooks/useApi';
 
 /**
  * Tarjeta para cada personaje dentro de la grilla de personajes. 
@@ -14,6 +16,7 @@ import './tarjeta-personaje.css';
  */
 const TarjetaPersonaje = () => {
 
+    const navigate = useNavigate()
     const dispatch = useAppDispatch();
     const {loading,data,page,name} = useAppSelector(state => state.character)
 
@@ -21,22 +24,25 @@ const TarjetaPersonaje = () => {
         dispatch(getCharacterByName({name, page}))
     }, [page])
     
+    const onClick = (id : number) => {
+        dispatch(idSetter(id))
+        return navigate("/detalle")
+    };
 
     return (loading ? 
         <h2>Cargando</h2>
         :
-        <div>
-        {data?.results.map(c=>
-            <div className="tarjeta-personaje">
-                <img src={c.image} alt={c.name}/>
-                <div className="tarjeta-personaje-body">
-                    <span>{c.name}</span>
-                    <BotonFavorito esFavorito={c.esFavorito} onClick={()=> !c.esFavorito} />
-                </div>
-                </div>
-                
-            )}
-        </div>
+        <>
+            {data?.results.map(c=>
+                <div className="tarjeta-personaje" >
+                    <img src={c.image} alt={c.name} onClick={()=>onClick(c.id)}/>
+                    <div className="tarjeta-personaje-body">
+                        <span>{c.name}</span>
+                        <BotonFavorito esFavorito={c.esFavorito}   />
+                    </div>
+                    </div>
+                )}
+        </>
 
     )
 }
