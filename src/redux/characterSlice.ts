@@ -1,8 +1,8 @@
-import { Character } from './../types/rickAndMorty.types';
+
+import { Character, Episode } from './../types/rickAndMorty.types';
 import { createSlice, PayloadAction,createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
 import { Characters } from '../types/rickAndMorty.types'
-import { useGetCharacterById, useGetCharacterByName, } from '../hooks/useApi'
+import { useGetAllCharacters, useGetCharacterById,useGetEpisodesByCharacter  } from '../hooks/useApi'
 
 
 interface initialType {
@@ -12,6 +12,8 @@ interface initialType {
     name: string
     character :Character | null
     id : number
+    favorites: Character[] 
+    episodesByCharacter: Episode[] | Episode
 }
 
 const initialState: initialType = {
@@ -20,17 +22,19 @@ const initialState: initialType = {
     page: 1,
     name: "",
     character: null,
-    id: 0
+    id: 0,
+    favorites: [],
+    episodesByCharacter: []
 }
 
 
-export const getCharacterByName = createAsyncThunk(
-    "characters/characterByName",
+export const getAllCharacters = createAsyncThunk(
+    "characters/allCharacters",
     async({name, page} : {name: string, page: number})=>{
-        const res = await useGetCharacterByName(name, page)
+        const res = await useGetAllCharacters(name, page)
         return res;
     },
-)
+);
 
 export const getCharacterById = createAsyncThunk(
     "characters/charactersByID",
@@ -38,15 +42,17 @@ export const getCharacterById = createAsyncThunk(
         const res = await useGetCharacterById(id);
         return res;
     }
+);
+
+export const getEpisodesByCharacter = createAsyncThunk(
+    "characters/characterEpidoses",
+    async (id: (string[] | number))=>{
+        const res = await useGetEpisodesByCharacter(id)
+        return res;
+    }
 )
 
-/**
- * Type '(state: WritableDraft<initialType>, action: { payload: any; type: string; }) => { esFavorito: boolean; id?: number | undefined; name?: string | undefined; ... 9 more ...; created?: string | undefined; } | undefined' is not assignable to type 'CaseReducer<initialType, { payload: any; type: string; }> | CaseReducerWithPrepare<initialType, PayloadAction<any, string, any, any>>'.
-  Type '(state: WritableDraft<initialType>, action: { payload: any; type: string; }) => { esFavorito: boolean; id?: number | undefined; name?: string | undefined; ... 9 more ...; created?: string | undefined; } | undefined' is not assignable to type 'CaseReducer<initialType, { payload: any; type: string; }>'.
-    Type '{ esFavorito: boolean; id?: number | undefined; name?: string | undefined; status?: string | undefined; species?: string | undefined; type?: string | undefined; gender?: string | undefined; ... 5 more ...; created?: string | undefined; } | undefined' is not assignable to type 'void | initialType | WritableDraft<initialType>'.
-      Type '{ esFavorito: boolean; id?: number | undefined; name?: string | undefined; status?: string | undefined; species?: string | undefined; type?: string | undefined; gender?: string | undefined; ... 5 more ...; created?: string | undefined; }' is not assignable to type 'void | initialType | WritableDraft<initialType>'.
-        Type '{ esFavorito: boolean; id?: number | undefined; name?: string | undefined; status?: string | undefined; species?: string | undefined; type?: string | undefined; gender?: string | undefined; ... 5 more ...; created?: string | undefined; }' is missing the following properties from type 'WritableDraft<initialType>': data, loading, page, characterts(2322)
- */
+
 const characterSlice = createSlice({
     name: 'characters',
     initialState,
@@ -57,41 +63,77 @@ const characterSlice = createSlice({
         decrementPage:(state) =>{
             state.page -= 1
         },
-        searchingValue:(state,action) =>{
+        searchingValue:(state,action: PayloadAction<string>) =>{
             state.name = action.payload
         },
-        idSetter:(state,action) =>{
+        cleanValue:(state) =>{
+            state.name = "";
+        },
+        idSetter:(state,action: PayloadAction<number>) =>{
             state.id = action.payload;
-        }
+        },
+        toggleFavorite: (state, action: PayloadAction<number>) => {
+            const character = state.data?.results.find((c) => c.id === action.payload);
+            if (character) {
+                character.esFavorito = !character.esFavorito;
+            }
+        },
+        addToFavorites:(state, action : PayloadAction<Character>)=>{
+            const character = state.data?.results.find((c) => c.id === action.payload.id);
+            if (character) {
+                const index = state.favorites.findIndex((c) => c.id === character.id);
+                if (index !== -1) {
+                    state.favorites.splice(index, 1);
+                } else {
+                    state.favorites.push(character);
+                }
+            }
+        },
+        deleteAllFavs:(state)=>{
+            state.favorites = []
+        },
+
     },
-    extraReducers:(builder) => {
-        builder
-            // by name
-            .addCase(getCharacterByName.pending, state => {
-                state.loading = true;
-            })
-            .addCase(getCharacterByName.fulfilled, (state,action) => {
-                state.loading = false;
-                state.data = action.payload;
-            })
-            .addCase(getCharacterByName.rejected,(state) => {
-                state.loading = false;
-            })
-            //by id
-            .addCase(getCharacterById.pending, state =>{
-                state.loading = true;
-            })
-            .addCase(getCharacterById.fulfilled, (state,action) =>{
-                state.loading = false;
-                state.character = action.payload;
-            })
-            .addCase(getCharacterById.rejected,(state) => {
-                state.loading = false;
-            })
+        extraReducers:(builder) => {
+            builder
+                // by name
+                .addCase(getAllCharacters.pending, state => {
+                    state.loading = true;
+                })
+                .addCase(getAllCharacters.fulfilled, (state,action: PayloadAction<Characters>) => {
+                    state.loading = false;
+                    state.data = action.payload;
+                })
+                .addCase(getAllCharacters.rejected,(state) => {
+                    state.loading = false;
+                })
+                //by id
+                .addCase(getCharacterById.pending, state =>{
+                    state.loading = true;
+                })
+                .addCase(getCharacterById.fulfilled, (state,action : PayloadAction<Character>) =>{
+                    state.loading = false;
+                    state.character = action.payload;
+                })
+                .addCase(getCharacterById.rejected,(state) => {
+                    state.loading = false;
+                })
+                //episode by character
+                .addCase(getEpisodesByCharacter.pending, state =>{
+                    state.loading = true;
+                })
+                .addCase(getEpisodesByCharacter.fulfilled, (state,action : PayloadAction<Episode[] | Episode>) =>{
+                    state.loading = false;
+                    state.episodesByCharacter = action.payload;
+                })
+                .addCase(getEpisodesByCharacter.rejected,(state) => {
+                    state.loading = false;
+                })
+
     },
 
 })
 
-export const {incrementPage,decrementPage,searchingValue,idSetter,} = characterSlice.actions;
+export const {incrementPage,decrementPage,searchingValue,idSetter,cleanValue,toggleFavorite,addToFavorites,deleteAllFavs} = characterSlice.actions;
 
 export default characterSlice.reducer;

@@ -12,8 +12,8 @@ import TarjetaPersonaje from './tarjeta-personaje.componente';
 const GrillaPersonajes = () => {
 
     return <div className="grilla-personajes">
-        <TarjetaPersonaje />
-    </div>
+                <TarjetaPersonaje />
+            </div>
 }
 
 export default GrillaPersonajes;

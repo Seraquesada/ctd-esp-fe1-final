@@ -1,5 +1,7 @@
 
+import { addToFavorites, toggleFavorite } from '../../redux/characterSlice';
 import { useAppDispatch } from '../../redux/hooks';
+import { Character } from '../../types/rickAndMorty.types';
 import './boton-favorito.css';
 
 /**
@@ -12,17 +14,21 @@ import './boton-favorito.css';
  */
 interface Props {
     esFavorito : boolean,
+    id: number,
+    character: Character,
 }
-const BotonFavorito = ({esFavorito}: Props) => {
+const BotonFavorito = ({esFavorito,id,character}: Props) => {
     
+    const src = esFavorito ? "/imagenes/star-filled.png" : "/imagenes/star.png"
     const dispatch = useAppDispatch()
 
-    console.log();
-    
+    const onClick = () : void => {
+        dispatch(toggleFavorite(id))
+        dispatch(addToFavorites(character))
+    }
 
-    const src = esFavorito ? "/imagenes/star-filled.png" : "/imagenes/star.png"
 
-    return  <div className="boton-favorito" onClick={()=>{}} >
+    return  <div className="boton-favorito" onClick={onClick} >
                 <img src={src} alt={"favorito"} />
             </div>
 }

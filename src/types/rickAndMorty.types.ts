@@ -17,7 +17,7 @@ export interface Character{
     episode: string[]
     url: string
     created: string
-    esFavorito: false
+    esFavorito: boolean
 }
 
 export interface Characters{
@@ -28,4 +28,15 @@ export interface Characters{
         prev: string | null
         }
     results: Character[]
+}
+
+export interface Episode {
+    id: number,
+    name: string
+    air_date: string
+    episode: string
+    characters: string[]
+    url: string
+    created: string
+        
 }
