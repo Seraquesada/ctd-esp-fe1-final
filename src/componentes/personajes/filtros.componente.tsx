@@ -3,10 +3,13 @@ import './filtros.css';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { getAllCharacters, searchingValue } from '../../redux/characterSlice';
 
-const Filtros = () => {
+
+interface Props{
+    inputRef: React.RefObject<HTMLInputElement>
+}
+const Filtros = ({inputRef}:Props) => {
 
     const [name, setName] = useState<string>("")
-    const inputRef = useRef<HTMLInputElement>(null);
 
     const dispatch = useAppDispatch()
     const onChange = (e:React.ChangeEvent<HTMLInputElement>) : void => setName(e.target.value) ;

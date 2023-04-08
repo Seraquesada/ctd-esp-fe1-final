@@ -3,6 +3,7 @@ import GrillaPersonajes from "../componentes/personajes/grilla-personajes.compon
 import Paginacion from "../componentes/paginacion/paginacion.componente";
 import BotonLimpiarFiltro from "../componentes/botones/boton-limpiar-filtros";
 import { useAppSelector } from "../redux/hooks";
+import { useRef } from "react";
 
 /**
  * Esta es la pagina principal. Aquí se debera ver el panel de filtros junto con la grilla de personajes.
@@ -14,13 +15,14 @@ import { useAppSelector } from "../redux/hooks";
  */
 const PaginaInicio = () => {
     const {data} = useAppSelector(state => state.character);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     return  <div className="container">
                 <div className="actions">
                     <h3>Catálogo de Personajes</h3>
-                    <BotonLimpiarFiltro/>
+                    <BotonLimpiarFiltro inputRef={inputRef}/>
                 </div>
-                <Filtros />
+                <Filtros inputRef={inputRef} />
                 <Paginacion />
                 <GrillaPersonajes />
                 <Paginacion />
