@@ -66,9 +66,6 @@ const characterSlice = createSlice({
         searchingValue:(state,action: PayloadAction<string>) =>{
             state.name = action.payload
         },
-        cleanValue:(state) =>{
-            state.name = "";
-        },
         idSetter:(state,action: PayloadAction<number>) =>{
             state.id = action.payload;
         },
@@ -134,6 +131,6 @@ const characterSlice = createSlice({
 
 })
 
-export const {incrementPage,decrementPage,searchingValue,idSetter,cleanValue,toggleFavorite,addToFavorites,deleteAllFavs} = characterSlice.actions;
+export const {incrementPage,decrementPage,searchingValue,idSetter,toggleFavorite,addToFavorites,deleteAllFavs} = characterSlice.actions;
 
 export default characterSlice.reducer;

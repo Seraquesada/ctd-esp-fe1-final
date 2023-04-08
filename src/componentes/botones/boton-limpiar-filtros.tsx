@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAppDispatch } from '../../redux/hooks'
-import { cleanValue, searchingValue } from '../../redux/characterSlice';
+import {  searchingValue } from '../../redux/characterSlice';
 
 interface Props{
     inputRef: React.RefObject<HTMLInputElement>
